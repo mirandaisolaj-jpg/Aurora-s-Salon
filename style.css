@@ -150,12 +150,13 @@ h2::after {
     background-color: #439a46;
 }
 
+/* El botón cambia a gris oscuro y se desactiva por completo (Corregido) */
 .btn-reserva.ocupado {
     background-color: #7a7a7a !important;
     color: #dfdfdf !important;
     cursor: not-allowed;
-    pointer-events: none;
     box-shadow: none;
+    pointer-events: none; /* Esto evita que hagan click de cualquier forma */
 }
 
 .menu-precios {

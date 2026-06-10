@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aurora’s Salon - Uñas y Estilo</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -29,44 +30,32 @@
             
             <section id="seccion-turnos" class="seccion-contenido">
                 <h2>Turnos Disponibles Hoy</h2>
-                <p class="info-text">Selecciona un horario para reservar vía WhatsApp (Horario de 9:00 AM a 5:00 PM).</p>
+                <p class="info-text">Selecciona un horario para reservar vía WhatsApp. ¡Actualizado en tiempo real!</p>
                 
                 <div class="grid-turnos">
                     
                     <div class="turno-card">
                         <h3>09:00 AM - 11:00 AM</h3>
                         <a href="https://wa.me/54440867?text=Hola%20Aurora’s%20Salon,%20me%20gustaría%20reservar%20el%20turno%20de%20las%209:00%20AM" 
-                           target="_blank" 
-                           class="btn-reserva" 
-                           id="turno-9am" 
-                           onclick="reservarTurno('turno-9am')">Reservar Turno</a>
+                           target="_blank" class="btn-reserva" id="turno-9am" onclick="intentarReservar(event, 'turno-9am')">Reservar Turno</a>
                     </div>
 
                     <div class="turno-card">
                         <h3>11:00 AM - 01:00 PM</h3>
                         <a href="https://wa.me/54440867?text=Hola%20Aurora’s%20Salon,%20me%20gustaría%20reservar%20el%20turno%20de%20las%2011:00%20AM" 
-                           target="_blank" 
-                           class="btn-reserva" 
-                           id="turno-11am" 
-                           onclick="reservarTurno('turno-11am')">Reservar Turno</a>
+                           target="_blank" class="btn-reserva" id="turno-11am" onclick="intentarReservar(event, 'turno-11am')">Reservar Turno</a>
                     </div>
 
                     <div class="turno-card">
                         <h3>02:00 PM - 04:00 PM</h3>
                         <a href="https://wa.me/54440867?text=Hola%20Aurora’s%20Salon,%20me%20gustaría%20reservar%20el%20turno%20de%20las%202:00%20PM" 
-                           target="_blank" 
-                           class="btn-reserva" 
-                           id="turno-2pm" 
-                           onclick="reservarTurno('turno-2pm')">Reservar Turno</a>
+                           target="_blank" class="btn-reserva" id="turno-2pm" onclick="intentarReservar(event, 'turno-2pm')">Reservar Turno</a>
                     </div>
 
                     <div class="turno-card">
                         <h3>04:00 PM - 05:00 PM</h3>
                         <a href="https://wa.me/54440867?text=Hola%20Aurora’s%20Salon,%20me%20gustaría%20reservar%20el%20turno%20de%20las%204:00%20PM" 
-                           target="_blank" 
-                           class="btn-reserva" 
-                           id="turno-4pm" 
-                           onclick="reservarTurno('turno-4pm')">Reservar Turno</a>
+                           target="_blank" class="btn-reserva" id="turno-4pm" onclick="intentarReservar(event, 'turno-4pm')">Reservar Turno</a>
                     </div>
 
                 </div>
@@ -131,43 +120,80 @@
     </footer>
 
     <script>
-        // Función que se ejecuta al hacer clic en reservar
-        function reservarTurno(idTurno) {
-            const hoy = new Date().toDateString();
-            localStorage.setItem(idTurno, hoy);
-            
-            // Espera un momento breve para simular el click y luego cambia el diseño visual
-            setTimeout(() => {
-                bloquearBotón(idTurno);
-            }, 500);
+        // CONFIGURACIÓN DE TU BASE DE DATOS (Reemplaza con tus datos reales de Supabase)
+        const SUPABASE_URL = "https://TU_SUPABASE_URL.supabase.co";
+        const SUPABASE_KEY = "TU_SUPABASE_ANON_KEY";
+        
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Al cargar la página, consulta la base de datos para ver el estado de los turnos en todo el mundo
+        window.onload = async function() {
+            await verificarYReiniciarTurnosSiEsMedianoche();
+            cargarTurnosEnTiempoReal();
         }
 
-        // Función para cambiar visualmente el botón a No Disponible
-        function bloquearBotón(id) {
+        async function cargarTurnosEnTiempoReal() {
+            let { data: turnos, error } = await _supabase
+                .from('turnos_salon')
+                .select('*');
+
+            if (!error && turnos) {
+                turnos.forEach(turno => {
+                    if (!turno.disponible) {
+                        bloquearBotonEnPantalla(turno.id);
+                    }
+                });
+            }
+        }
+
+        // Función crítica: El primero que hace click intenta adueñarse del turno en la base de datos
+        async function intentarReservar(event, idTurno) {
+            // Detenemos el envío inmediato a WhatsApp para verificar primero la base de datos global
+            event.preventDefault();
+            const linkOriginal = event.currentTarget.getAttribute('href');
+
+            // Intentamos actualizar solo si actualmente está libre en la base de datos
+            const { data, error } = await _supabase
+                .from('turnos_salon')
+                .update({ disponible: false })
+                .eq('id', idTurno)
+                .eq('disponible', true)
+                .select();
+
+            if (error || data.length === 0) {
+                // Si data está vacío es porque ALGUIEN MÁS ya lo cambió a false milisegundos antes
+                alert("¡Lo sentimos! Este turno acaba de ser reservado por otro cliente hace unos instantes.");
+                bloquearBotonEnPantalla(idTurno);
+            } else {
+                // Si la actualización fue exitosa, tú ganaste el turno. Te bloqueamos y te enviamos a WhatsApp
+                bloquearBotonEnPantalla(idTurno);
+                window.open(linkOriginal, '_blank');
+            }
+        }
+
+        function bloquearBotonEnPantalla(id) {
             const boton = document.getElementById(id);
             if (boton) {
                 boton.innerText = "No Disponible";
                 boton.classList.add("ocupado");
-                boton.removeAttribute("href");
-                boton.removeAttribute("target");
                 boton.removeAttribute("onclick");
             }
         }
 
-        // Al cargar la página, comprueba si los turnos caducaron o siguen reservados hoy
-        window.onload = function() {
-            const hoy = new Date().toDateString();
-            const turnos = ['turno-9am', 'turno-11am', 'turno-2pm', 'turno-4pm'];
+        // Lógica automática para reiniciar los turnos a las 12:00 de la noche en la Base de Datos
+        async function verificarYReiniciarTurnosSiEsMedianoche() {
+            const hoy = new Date().toISOString().split('T')[0];
             
-            turnos.forEach(id => {
-                const fechaReserva = localStorage.getItem(id);
-                // Si está reservado y es de hoy, se bloquea. Si es de un día anterior se reinicia automáticamente.
-                if (fechaReserva === hoy) {
-                    bloquearBotón(id);
-                } else {
-                    localStorage.removeItem(id);
-                }
-            });
+            // Consultamos la fecha del último cambio registrado en la base de datos
+            let { data, error } = await _supabase.from('turnos_salon').select('fecha_actualizacion').limit(1);
+            
+            if (data && data[0] && data[0].fecha_actualizacion !== hoy) {
+                // Si la fecha de la base de datos es de ayer, significa que ya pasó la medianoche. Reiniciamos todo de golpe.
+                await _supabase
+                    .from('turnos_salon')
+                    .update({ disponible: true, fecha_actualizacion: hoy })
+                    .neq('id', 'vacio'); // Afecta a todas las filas
+            }
         }
     </script>
 
