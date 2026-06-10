@@ -46,7 +46,6 @@ header .subtitle {
     padding: 0 20px;
 }
 
-/* Ocultar los inputs de control de radio en la pantalla */
 input[type="radio"] {
     display: none;
 }
@@ -61,7 +60,6 @@ input[type="radio"] {
     padding-bottom: 15px;
 }
 
-/* Estilo para los botones del menú */
 .btn-nav {
     display: inline-block;
     padding: 12px 25px;
@@ -80,7 +78,6 @@ input[type="radio"] {
     color: #fff;
 }
 
-/* Ocultar todas las secciones por defecto */
 .seccion-contenido {
     display: none;
     background-color: rgba(255, 255, 255, 0.96);
@@ -89,12 +86,10 @@ input[type="radio"] {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
-/* Lógica CSS para mostrar la sección correspondiente según el botón seleccionado */
 #tab-turnos:checked ~ .contenido-secciones #seccion-turnos { display: block; }
 #tab-precios:checked ~ .contenido-secciones #seccion-precios { display: block; }
 #tab-galeria:checked ~ .contenido-secciones #seccion-galeria { display: block; }
 
-/* Cambiar el estilo visual del botón que está seleccionado activamente */
 #tab-turnos:checked ~ .menu-navegacion label[for="tab-turnos"],
 #tab-precios:checked ~ .menu-navegacion label[for="tab-precios"],
 #tab-galeria:checked ~ .menu-navegacion label[for="tab-galeria"] {
@@ -161,6 +156,15 @@ h2::after {
 
 .btn-reserva:hover {
     background-color: #439a46;
+}
+
+/* NUEVA REGLA CSS PARA EL BOTÓN OCUPADO MANUALLY */
+.btn-reserva.ocupado {
+    background-color: #7a7a7a !important;
+    color: #dfdfdf !important;
+    cursor: not-allowed;
+    pointer-events: none; /* Desactiva el link por completo para que no abra WhatsApp */
+    box-shadow: none;
 }
 
 /* Lista de Precios */
