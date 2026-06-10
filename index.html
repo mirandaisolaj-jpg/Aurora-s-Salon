@@ -30,34 +30,47 @@
             
             <section id="seccion-turnos" class="seccion-contenido">
                 <h2>Turnos Disponibles Hoy</h2>
-                <p class="info-text">Selecciona un horario para reservar vía WhatsApp. ¡Actualizado en tiempo real!</p>
+                <p class="info-text">Selecciona un horario para reservar vía WhatsApp. ¡Actualizado en tiempo real globalmente!</p>
                 
                 <div class="grid-turnos">
                     
-                    <div class="turno-card">
+                    <!-- TURNO 1 -->
+                    <div class="turno-card" id="card-turno-9am">
                         <h3>09:00 AM - 11:00 AM</h3>
                         <a href="https://wa.me/54440867?text=Hola%20Aurora’s%20Salon,%20me%20gustaría%20reservar%20el%20turno%20de%20las%209:00%20AM" 
                            target="_blank" class="btn-reserva" id="turno-9am" onclick="intentarReservar(event, 'turno-9am')">Reservar Turno</a>
+                        <div class="info-reserva-usuario" id="info-user-turno-9am" style="display:none; margin-top:12px; font-size:0.85rem; color:#d45d79; font-weight:bold; background:#fff0f2; padding:5px; border-radius:4px;"></div>
                     </div>
 
-                    <div class="turno-card">
+                    <!-- TURNO 2 -->
+                    <div class="turno-card" id="card-turno-11am">
                         <h3>11:00 AM - 01:00 PM</h3>
                         <a href="https://wa.me/54440867?text=Hola%20Aurora’s%20Salon,%20me%20gustaría%20reservar%20el%20turno%20de%20las%2011:00%20AM" 
                            target="_blank" class="btn-reserva" id="turno-11am" onclick="intentarReservar(event, 'turno-11am')">Reservar Turno</a>
+                        <div class="info-reserva-usuario" id="info-user-turno-11am" style="display:none; margin-top:12px; font-size:0.85rem; color:#d45d79; font-weight:bold; background:#fff0f2; padding:5px; border-radius:4px;"></div>
                     </div>
 
-                    <div class="turno-card">
+                    <!-- TURNO 3 -->
+                    <div class="turno-card" id="card-turno-2pm">
                         <h3>02:00 PM - 04:00 PM</h3>
                         <a href="https://wa.me/54440867?text=Hola%20Aurora’s%20Salon,%20me%20gustaría%20reservar%20el%20turno%20de%20las%202:00%20PM" 
                            target="_blank" class="btn-reserva" id="turno-2pm" onclick="intentarReservar(event, 'turno-2pm')">Reservar Turno</a>
+                        <div class="info-reserva-usuario" id="info-user-turno-2pm" style="display:none; margin-top:12px; font-size:0.85rem; color:#d45d79; font-weight:bold; background:#fff0f2; padding:5px; border-radius:4px;"></div>
                     </div>
 
-                    <div class="turno-card">
+                    <!-- TURNO 4 -->
+                    <div class="turno-card" id="card-turno-4pm">
                         <h3>04:00 PM - 05:00 PM</h3>
                         <a href="https://wa.me/54440867?text=Hola%20Aurora’s%20Salon,%20me%20gustaría%20reservar%20el%20turno%20de%20las%204:00%20PM" 
                            target="_blank" class="btn-reserva" id="turno-4pm" onclick="intentarReservar(event, 'turno-4pm')">Reservar Turno</a>
+                        <div class="info-reserva-usuario" id="info-user-turno-4pm" style="display:none; margin-top:12px; font-size:0.85rem; color:#d45d79; font-weight:bold; background:#fff0f2; padding:5px; border-radius:4px;"></div>
                     </div>
 
+                </div>
+
+                <!-- MENSAJE DE TURNOS AGOTADOS (Abajo de la cuadrícula) -->
+                <div id="aviso-turnos-agotados" style="display: none; text-align: center; margin-top: 25px; padding: 15px; background-color: #fce8e6; border: 1px solid #f5c2c2; border-radius: 8px; color: #a83232; font-weight: bold; font-size: 1.1rem;">
+                    🚫 ¡Todos los turnos de hoy han sido reservados! Vuelve a consultar mañana.
                 </div>
             </section>
 
@@ -120,47 +133,103 @@
     </footer>
 
     <script>
-        // REEMPLAZA ESTOS DOS VALORES CON TUS CREDENCIALES REALES DE SUPABASE
+        // REEMPLAZA ESTOS DOS VALORES CON TUS CREDENCIALES DE SUPABASE
         const SUPABASE_URL = "sb_publishable_zy54KgyJ80c9H9n22HP7IQ_c1OfPLD9";
         const SUPABASE_KEY = "sb_secret_LiZRfLhZFhhF0wu0zrucGg_0VpReJ8q";
         
         let _supabase = null;
         let usandoBaseDatosReal = false;
 
-        // Intentamos inicializar la base de datos de forma segura
+        // Estado local para rastrear cuáles turnos están ocupados
+        const estadoTurnos = {
+            "turno-9am": true,
+            "turno-11am": true,
+            "turno-2pm": true,
+            "turno-4pm": true
+        };
+
         if (SUPABASE_URL !== "https://TU_SUPABASE_URL.supabase.co" && SUPABASE_KEY !== "TU_SUPABASE_ANON_KEY") {
             try {
                 _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 usandoBaseDatosReal = true;
             } catch (e) {
-                console.warn("No se pudo conectar a Supabase. Se usará el modo local de respaldo.");
+                console.warn("Fallo al iniciar Supabase.");
             }
         }
 
         window.onload = async function() {
             if (usandoBaseDatosReal) {
                 await verificarYReiniciarTurnosSiEsMedianoche();
-                cargarTurnosEnTiempoReal();
-            } else {
-                console.log("Modo de desarrollo local activo. Los turnos están libres por defecto.");
+                await cargarTurnosIniciales();
+                conectarAgenteTiempoReal();
             }
         }
 
-        async function cargarTurnosEnTiempoReal() {
-            try {
-                let { data: turnos, error } = await _supabase
-                    .from('turnos_salon')
-                    .select('*');
+        async function cargarTurnosIniciales() {
+            let { data: turnos, error } = await _supabase.from('turnos_salon').select('*');
+            if (!error && turnos) {
+                turnos.forEach(turno => {
+                    actualizarInterfazTurno(turno.id, turno.disponible, turno.usuario_reserva);
+                });
+            }
+        }
 
-                if (!error && turnos) {
-                    turnos.forEach(turno => {
-                        if (!turno.disponible) {
-                            bloquearBotonEnPantalla(turno.id);
-                        }
-                    });
+        function conectarAgenteTiempoReal() {
+            _supabase
+                .channel('cambios-turnos-en-vivo')
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'turnos_salon' }, payload => {
+                    const turnoModificado = payload.new;
+                    actualizarInterfazTurno(turnoModificado.id, turnoModificado.disponible, turnoModificado.usuario_reserva);
+                })
+                .subscribe();
+        }
+
+        function actualizarInterfazTurno(id, disponible, usuario) {
+            const boton = document.getElementById(id);
+            const infoUser = document.getElementById('info-user-' + id);
+
+            // Guardamos el estado actual del turno en nuestro rastreador
+            if (id in estadoTurnos) {
+                estadoTurnos[id] = disponible;
+            }
+
+            if (!disponible) {
+                if (boton) {
+                    boton.innerText = "No Disponible";
+                    boton.classList.add("ocupado");
+                    boton.removeAttribute("onclick");
                 }
-            } catch (e) {
-                console.error("Error al leer los turnos desde Supabase:", e);
+                if (infoUser && usuario) {
+                    infoUser.innerText = `Reservado por: ${usuario}`;
+                    infoUser.style.display = "block";
+                }
+            } else {
+                if (boton) {
+                    boton.innerText = "Reservar Turno";
+                    boton.classList.remove("ocupado");
+                    boton.setAttribute("onclick", `intentarReservar(event, '${id}')`);
+                }
+                if (infoUser) {
+                    infoUser.style.display = "none";
+                    infoUser.innerText = "";
+                }
+            }
+
+            // Comprobar globalmente si ya se cerraron todos los espacios
+            verificarSiTodoEstaAgotado();
+        }
+
+        // Revisa si quedan turnos libres. Si todos son falsos (ocupados), muestra el cartel abajo
+        function verificarSiTodoEstaAgotado() {
+            const aviso = document.getElementById("aviso-turnos-agotados");
+            const quedanLibres = Object.values(estadoTurnos).includes(true);
+
+            if (aviso) {
+                if (!quedanLibres) {
+                    aviso.style.display = "block"; // Se muestra si están todos dados
+                } else {
+                    aviso.style.display = "none";  // Se oculta si hay al menos uno libre
+                }
             }
         }
 
@@ -168,58 +237,50 @@
             event.preventDefault();
             const linkOriginal = event.currentTarget.getAttribute('href');
 
-            // Si no está configurada la base de datos real, el botón funciona localmente de inmediato
             if (!usandoBaseDatosReal) {
-                bloquearBotonEnPantalla(idTurno);
+                actualizarInterfazTurno(idTurno, false, "Usuario Prueba");
                 window.open(linkOriginal, '_blank');
                 return;
             }
 
-            // Lógica de control global estricta para base de datos en producción
+            let nombreUsuario = prompt("Por favor, introduce tu nombre para confirmar la reserva:");
+            if (!nombreUsuario || nombreUsuario.trim() === "") {
+                alert("Es necesario introducir un nombre para reservar el turno.");
+                return; 
+            }
+            nombreUsuario = nombreUsuario.trim();
+
             try {
                 const { data, error } = await _supabase
                     .from('turnos_salon')
-                    .update({ disponible: false })
+                    .update({ disponible: false, usuario_reserva: nombreUsuario })
                     .eq('id', idTurno)
                     .eq('disponible', true)
                     .select();
 
                 if (error || !data || data.length === 0) {
-                    alert("¡Lo sentimos! Este turno acaba de ser reservado por otro cliente hace unos instantes.");
-                    bloquearBotonEnPantalla(idTurno);
+                    alert("¡Lo sentimos! Este turno acaba de ser reservado por otro cliente.");
                 } else {
-                    bloquearBotonEnPantalla(idTurno);
-                    window.open(linkOriginal, '_blank');
+                    const linkConNombre = linkOriginal + `%20por%20parte%20de%20${encodeURIComponent(nombreUsuario)}`;
+                    window.open(linkConNombre, '_blank');
                 }
             } catch (e) {
-                // En caso de caída de red durante la reserva
-                alert("Error de conexión con el servidor de reservas. Inténtalo de nuevo.");
-            }
-        }
-
-        function bloquearBotonEnPantalla(id) {
-            const boton = document.getElementById(id);
-            if (boton) {
-                boton.innerText = "No Disponible";
-                boton.classList.add("ocupado");
-                boton.removeAttribute("onclick");
+                alert("Error de red. Inténtalo de nuevo.");
             }
         }
 
         async function verificarYReiniciarTurnosSiEsMedianoche() {
             try {
                 const hoy = new Date().toISOString().split('T')[0];
-                let { data, error } = await _supabase.from('turnos_salon').select('fecha_actualizacion').limit(1);
+                let { data } = await _supabase.from('turnos_salon').select('fecha_actualizacion').limit(1);
                 
                 if (data && data[0] && data[0].fecha_actualizacion !== hoy) {
                     await _supabase
                         .from('turnos_salon')
-                        .update({ disponible: true, fecha_actualizacion: hoy })
+                        .update({ disponible: true, usuario_reserva: null, fecha_actualizacion: hoy })
                         .neq('id', 'vacio');
                 }
-            } catch (e) {
-                console.warn("No se pudo verificar el reinicio de horarios de medianoche.");
-            }
+            } catch (e) {}
         }
     </script>
 
