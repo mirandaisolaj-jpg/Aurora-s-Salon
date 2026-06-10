@@ -6,7 +6,6 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Imagen de Fondo (Img1) aplicada directamente a toda la página */
 body {
     color: #333;
     background-image: linear-gradient(rgba(252, 248, 248, 0.88), rgba(252, 248, 248, 0.88)), url('img1.jpg');
@@ -18,7 +17,6 @@ body {
     min-height: 100vh;
 }
 
-/* Encabezado */
 header {
     background-color: rgba(255, 240, 242, 0.9);
     text-align: center;
@@ -38,8 +36,6 @@ header .subtitle {
     color: #666;
 }
 
-/* --- LÓGICA DE PESTAÑAS (HTML/CSS PURO) --- */
-
 .contenedor-pestanas {
     max-width: 1000px;
     margin: 20px auto;
@@ -50,7 +46,6 @@ input[type="radio"] {
     display: none;
 }
 
-/* Menú de navegación - Botones uno al lado del otro */
 .menu-navegacion {
     display: flex;
     justify-content: center;
@@ -98,8 +93,6 @@ input[type="radio"] {
     box-shadow: 0 4px 8px rgba(212, 93, 121, 0.3);
 }
 
-/* ------------------------------------------- */
-
 h2 {
     text-align: center;
     color: #d45d79;
@@ -121,7 +114,6 @@ h2::after {
     margin-bottom: 30px;
 }
 
-/* Grid de Turnos */
 .grid-turnos {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -158,16 +150,14 @@ h2::after {
     background-color: #439a46;
 }
 
-/* NUEVA REGLA CSS PARA EL BOTÓN OCUPADO MANUALLY */
 .btn-reserva.ocupado {
     background-color: #7a7a7a !important;
     color: #dfdfdf !important;
     cursor: not-allowed;
-    pointer-events: none; /* Desactiva el link por completo para que no abra WhatsApp */
+    pointer-events: none;
     box-shadow: none;
 }
 
-/* Lista de Precios */
 .menu-precios {
     max-width: 600px;
     margin: 0 auto;
@@ -193,7 +183,6 @@ h2::after {
     color: #444;
 }
 
-/* Galería de Fotos (Img2 a Img10) */
 .grid-galeria {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -213,7 +202,6 @@ h2::after {
     transform: scale(1.03);
 }
 
-/* Botón de WhatsApp Flotante */
 .whatsapp-float {
     position: fixed;
     width: 60px;
@@ -239,7 +227,6 @@ h2::after {
     height: 35px;
 }
 
-/* Pie de Página */
 footer {
     background-color: #333;
     color: #fff;
@@ -260,7 +247,6 @@ footer .copyright {
     color: #aaa;
 }
 
-/* Ajustes Responsivos (Móviles) */
 @media (max-width: 600px) {
     header h1 { font-size: 2.2rem; }
     .menu-navegacion { flex-direction: column; width: 100%; }
