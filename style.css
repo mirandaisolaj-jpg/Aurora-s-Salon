@@ -1,0 +1,266 @@
+/* Configuración General y Accesibilidad */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Imagen de Fondo (Img1) aplicada directamente a toda la página */
+body {
+    color: #333;
+    background-image: linear-gradient(rgba(252, 248, 248, 0.88), rgba(252, 248, 248, 0.88)), url('img1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Encabezado */
+header {
+    background-color: rgba(255, 240, 242, 0.9);
+    text-align: center;
+    padding: 35px 20px 20px 20px;
+    border-bottom: 1px solid #fbc4cb;
+}
+
+header h1 {
+    font-size: 3rem;
+    color: #d45d79;
+    letter-spacing: 2px;
+    margin-bottom: 5px;
+}
+
+header .subtitle {
+    font-style: italic;
+    color: #666;
+}
+
+/* --- LÓGICA DE PESTAÑAS (HTML/CSS PURO) --- */
+
+.contenedor-pestanas {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* Ocultar los inputs de control de radio en la pantalla */
+input[type="radio"] {
+    display: none;
+}
+
+/* Menú de navegación - Botones uno al lado del otro */
+.menu-navegacion {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #fbc4cb;
+    padding-bottom: 15px;
+}
+
+/* Estilo para los botones del menú */
+.btn-nav {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #d45d79;
+    font-weight: bold;
+    border: 1px solid #fbc4cb;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.btn-nav:hover {
+    background-color: #fbc4cb;
+    color: #fff;
+}
+
+/* Ocultar todas las secciones por defecto */
+.seccion-contenido {
+    display: none;
+    background-color: rgba(255, 255, 255, 0.96);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Lógica CSS para mostrar la sección correspondiente según el botón seleccionado */
+#tab-turnos:checked ~ .contenido-secciones #seccion-turnos { display: block; }
+#tab-precios:checked ~ .contenido-secciones #seccion-precios { display: block; }
+#tab-galeria:checked ~ .contenido-secciones #seccion-galeria { display: block; }
+
+/* Cambiar el estilo visual del botón que está seleccionado activamente */
+#tab-turnos:checked ~ .menu-navegacion label[for="tab-turnos"],
+#tab-precios:checked ~ .menu-navegacion label[for="tab-precios"],
+#tab-galeria:checked ~ .menu-navegacion label[for="tab-galeria"] {
+    background-color: #d45d79;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(212, 93, 121, 0.3);
+}
+
+/* ------------------------------------------- */
+
+h2 {
+    text-align: center;
+    color: #d45d79;
+    margin-bottom: 20px;
+}
+
+h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background-color: #fbc4cb;
+    margin: 8px auto 0 auto;
+}
+
+.info-text {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* Grid de Turnos */
+.grid-turnos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.turno-card {
+    background-color: #fff4f5;
+    border: 1px solid #fbc4cb;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+}
+
+.turno-card h3 {
+    font-size: 1.1rem;
+    color: #444;
+    margin-bottom: 15px;
+}
+
+.btn-reserva {
+    display: inline-block;
+    text-decoration: none;
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.3s;
+    width: 100%;
+}
+
+.btn-reserva:hover {
+    background-color: #439a46;
+}
+
+/* Lista de Precios */
+.menu-precios {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.menu-precios h3 {
+    color: #d45d79;
+    margin-top: 25px;
+    font-size: 1.2rem;
+    border-bottom: 1px dashed #fbc4cb;
+    padding-bottom: 5px;
+}
+
+.menu-precios ul {
+    list-style: none;
+    padding: 10px 0;
+}
+
+.menu-precios li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: #444;
+}
+
+/* Galería de Fotos (Img2 a Img10) */
+.grid-galeria {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.grid-galeria img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.grid-galeria img:hover {
+    transform: scale(1.03);
+}
+
+/* Botón de WhatsApp Flotante */
+.whatsapp-float {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    bottom: 40px;
+    right: 40px;
+    background-color: #25d366;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    transition: transform 0.3s;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+}
+
+.whatsapp-icon {
+    width: 35px;
+    height: 35px;
+}
+
+/* Pie de Página */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 50px;
+}
+
+footer .frase {
+    font-style: italic;
+    font-size: 1.2rem;
+    color: #fbc4cb;
+    margin-bottom: 15px;
+}
+
+footer .copyright {
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+/* Ajustes Responsivos (Móviles) */
+@media (max-width: 600px) {
+    header h1 { font-size: 2.2rem; }
+    .menu-navegacion { flex-direction: column; width: 100%; }
+    .btn-nav { width: 100%; }
+    .whatsapp-float { bottom: 20px; right: 20px; width: 50px; height: 50px; }
+    .whatsapp-icon { width: 28px; height: 28px; }
+}
