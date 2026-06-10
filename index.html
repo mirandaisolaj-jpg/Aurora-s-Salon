@@ -120,54 +120,80 @@
     </footer>
 
     <script>
-        // CONFIGURACIÓN DE TU BASE DE DATOS (Reemplaza con tus datos reales de Supabase)
+        // REEMPLAZA ESTOS DOS VALORES CON TUS CREDENCIALES REALES DE SUPABASE
         const SUPABASE_URL = "https://TU_SUPABASE_URL.supabase.co";
         const SUPABASE_KEY = "TU_SUPABASE_ANON_KEY";
         
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let _supabase = null;
+        let usandoBaseDatosReal = false;
 
-        // Al cargar la página, consulta la base de datos para ver el estado de los turnos en todo el mundo
-        window.onload = async function() {
-            await verificarYReiniciarTurnosSiEsMedianoche();
-            cargarTurnosEnTiempoReal();
-        }
-
-        async function cargarTurnosEnTiempoReal() {
-            let { data: turnos, error } = await _supabase
-                .from('turnos_salon')
-                .select('*');
-
-            if (!error && turnos) {
-                turnos.forEach(turno => {
-                    if (!turno.disponible) {
-                        bloquearBotonEnPantalla(turno.id);
-                    }
-                });
+        // Intentamos inicializar la base de datos de forma segura
+        if (SUPABASE_URL !== "https://TU_SUPABASE_URL.supabase.co" && SUPABASE_KEY !== "TU_SUPABASE_ANON_KEY") {
+            try {
+                _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                usandoBaseDatosReal = true;
+            } catch (e) {
+                console.warn("No se pudo conectar a Supabase. Se usará el modo local de respaldo.");
             }
         }
 
-        // Función crítica: El primero que hace click intenta adueñarse del turno en la base de datos
+        window.onload = async function() {
+            if (usandoBaseDatosReal) {
+                await verificarYReiniciarTurnosSiEsMedianoche();
+                cargarTurnosEnTiempoReal();
+            } else {
+                console.log("Modo de desarrollo local activo. Los turnos están libres por defecto.");
+            }
+        }
+
+        async function cargarTurnosEnTiempoReal() {
+            try {
+                let { data: turnos, error } = await _supabase
+                    .from('turnos_salon')
+                    .select('*');
+
+                if (!error && turnos) {
+                    turnos.forEach(turno => {
+                        if (!turno.disponible) {
+                            bloquearBotonEnPantalla(turno.id);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Error al leer los turnos desde Supabase:", e);
+            }
+        }
+
         async function intentarReservar(event, idTurno) {
-            // Detenemos el envío inmediato a WhatsApp para verificar primero la base de datos global
             event.preventDefault();
             const linkOriginal = event.currentTarget.getAttribute('href');
 
-            // Intentamos actualizar solo si actualmente está libre en la base de datos
-            const { data, error } = await _supabase
-                .from('turnos_salon')
-                .update({ disponible: false })
-                .eq('id', idTurno)
-                .eq('disponible', true)
-                .select();
-
-            if (error || data.length === 0) {
-                // Si data está vacío es porque ALGUIEN MÁS ya lo cambió a false milisegundos antes
-                alert("¡Lo sentimos! Este turno acaba de ser reservado por otro cliente hace unos instantes.");
-                bloquearBotonEnPantalla(idTurno);
-            } else {
-                // Si la actualización fue exitosa, tú ganaste el turno. Te bloqueamos y te enviamos a WhatsApp
+            // Si no está configurada la base de datos real, el botón funciona localmente de inmediato
+            if (!usandoBaseDatosReal) {
                 bloquearBotonEnPantalla(idTurno);
                 window.open(linkOriginal, '_blank');
+                return;
+            }
+
+            // Lógica de control global estricta para base de datos en producción
+            try {
+                const { data, error } = await _supabase
+                    .from('turnos_salon')
+                    .update({ disponible: false })
+                    .eq('id', idTurno)
+                    .eq('disponible', true)
+                    .select();
+
+                if (error || !data || data.length === 0) {
+                    alert("¡Lo sentimos! Este turno acaba de ser reservado por otro cliente hace unos instantes.");
+                    bloquearBotonEnPantalla(idTurno);
+                } else {
+                    bloquearBotonEnPantalla(idTurno);
+                    window.open(linkOriginal, '_blank');
+                }
+            } catch (e) {
+                // En caso de caída de red durante la reserva
+                alert("Error de conexión con el servidor de reservas. Inténtalo de nuevo.");
             }
         }
 
@@ -180,19 +206,19 @@
             }
         }
 
-        // Lógica automática para reiniciar los turnos a las 12:00 de la noche en la Base de Datos
         async function verificarYReiniciarTurnosSiEsMedianoche() {
-            const hoy = new Date().toISOString().split('T')[0];
-            
-            // Consultamos la fecha del último cambio registrado en la base de datos
-            let { data, error } = await _supabase.from('turnos_salon').select('fecha_actualizacion').limit(1);
-            
-            if (data && data[0] && data[0].fecha_actualizacion !== hoy) {
-                // Si la fecha de la base de datos es de ayer, significa que ya pasó la medianoche. Reiniciamos todo de golpe.
-                await _supabase
-                    .from('turnos_salon')
-                    .update({ disponible: true, fecha_actualizacion: hoy })
-                    .neq('id', 'vacio'); // Afecta a todas las filas
+            try {
+                const hoy = new Date().toISOString().split('T')[0];
+                let { data, error } = await _supabase.from('turnos_salon').select('fecha_actualizacion').limit(1);
+                
+                if (data && data[0] && data[0].fecha_actualizacion !== hoy) {
+                    await _supabase
+                        .from('turnos_salon')
+                        .update({ disponible: true, fecha_actualizacion: hoy })
+                        .neq('id', 'vacio');
+                }
+            } catch (e) {
+                console.warn("No se pudo verificar el reinicio de horarios de medianoche.");
             }
         }
     </script>
