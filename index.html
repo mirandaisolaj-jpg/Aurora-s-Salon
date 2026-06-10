@@ -39,7 +39,7 @@
                         <h3>09:00 AM - 11:00 AM</h3>
                         <a href="https://wa.me/54440867?text=Hola%20Aurora’s%20Salon,%20me%20gustaría%20reservar%20el%20turno%20de%20las%209:00%20AM" 
                            target="_blank" class="btn-reserva" id="turno-9am" onclick="intentarReservar(event, 'turno-9am')">Reservar Turno</a>
-                        <div class="info-reserva-usuario" id="info-user-turno-9am" style="display:none; margin-top:12px; font-size:0.85rem; color:#d45d79; font-weight:bold; background:#fff0f2; padding:5px; border-radius:4px;"></div>
+                        <div class="info-reserva-usuario" id="info-user-turno-9am" style="display:none; margin-top:12px; font-size:0.85rem; color:#d45d79; font-weight:bold; background:#fff0f2; padding:8px; border-radius:4px; border: 1px solid #fbcdd4;"></div>
                     </div>
 
                     <!-- TURNO 2 -->
@@ -47,7 +47,7 @@
                         <h3>11:00 AM - 01:00 PM</h3>
                         <a href="https://wa.me/54440867?text=Hola%20Aurora’s%20Salon,%20me%20gustaría%20reservar%20el%20turno%20de%20las%2011:00%20AM" 
                            target="_blank" class="btn-reserva" id="turno-11am" onclick="intentarReservar(event, 'turno-11am')">Reservar Turno</a>
-                        <div class="info-reserva-usuario" id="info-user-turno-11am" style="display:none; margin-top:12px; font-size:0.85rem; color:#d45d79; font-weight:bold; background:#fff0f2; padding:5px; border-radius:4px;"></div>
+                        <div class="info-reserva-usuario" id="info-user-turno-11am" style="display:none; margin-top:12px; font-size:0.85rem; color:#d45d79; font-weight:bold; background:#fff0f2; padding:8px; border-radius:4px; border: 1px solid #fbcdd4;"></div>
                     </div>
 
                     <!-- TURNO 3 -->
@@ -55,7 +55,7 @@
                         <h3>02:00 PM - 04:00 PM</h3>
                         <a href="https://wa.me/54440867?text=Hola%20Aurora’s%20Salon,%20me%20gustaría%20reservar%20el%20turno%20de%20las%202:00%20PM" 
                            target="_blank" class="btn-reserva" id="turno-2pm" onclick="intentarReservar(event, 'turno-2pm')">Reservar Turno</a>
-                        <div class="info-reserva-usuario" id="info-user-turno-2pm" style="display:none; margin-top:12px; font-size:0.85rem; color:#d45d79; font-weight:bold; background:#fff0f2; padding:5px; border-radius:4px;"></div>
+                        <div class="info-reserva-usuario" id="info-user-turno-2pm" style="display:none; margin-top:12px; font-size:0.85rem; color:#d45d79; font-weight:bold; background:#fff0f2; padding:8px; border-radius:4px; border: 1px solid #fbcdd4;"></div>
                     </div>
 
                     <!-- TURNO 4 -->
@@ -63,17 +63,18 @@
                         <h3>04:00 PM - 05:00 PM</h3>
                         <a href="https://wa.me/54440867?text=Hola%20Aurora’s%20Salon,%20me%20gustaría%20reservar%20el%20turno%20de%20las%204:00%20PM" 
                            target="_blank" class="btn-reserva" id="turno-4pm" onclick="intentarReservar(event, 'turno-4pm')">Reservar Turno</a>
-                        <div class="info-reserva-usuario" id="info-user-turno-4pm" style="display:none; margin-top:12px; font-size:0.85rem; color:#d45d79; font-weight:bold; background:#fff0f2; padding:5px; border-radius:4px;"></div>
+                        <div class="info-reserva-usuario" id="info-user-turno-4pm" style="display:none; margin-top:12px; font-size:0.85rem; color:#d45d79; font-weight:bold; background:#fff0f2; padding:8px; border-radius:4px; border: 1px solid #fbcdd4;"></div>
                     </div>
 
                 </div>
 
-                <!-- MENSAJE DE TURNOS AGOTADOS (Abajo de la cuadrícula) -->
+                <!-- MENSAJE DE TURNOS AGOTADOS -->
                 <div id="aviso-turnos-agotados" style="display: none; text-align: center; margin-top: 25px; padding: 15px; background-color: #fce8e6; border: 1px solid #f5c2c2; border-radius: 8px; color: #a83232; font-weight: bold; font-size: 1.1rem;">
                     🚫 ¡Todos los turnos de hoy han sido reservados! Vuelve a consultar mañana.
                 </div>
             </section>
 
+            <!-- Sección de Precios -->
             <section id="seccion-precios" class="seccion-contenido">
                 <h2>Lista de Precios</h2>
                 <div class="menu-precios">
@@ -104,6 +105,7 @@
                 </div>
             </section>
 
+            <!-- Sección de Galería -->
             <section id="seccion-galeria" class="seccion-contenido">
                 <h2>Nuestros Trabajos Diarios</h2>
                 <p class="info-text">Actualizamos nuestras fotos diariamente para mostrarte las últimas tendencias.</p>
@@ -134,13 +136,12 @@
 
     <script>
         // REEMPLAZA ESTOS DOS VALORES CON TUS CREDENCIALES DE SUPABASE
-        const SUPABASE_URL = "sb_publishable_zy54KgyJ80c9H9n22HP7IQ_c1OfPLD9";
-        const SUPABASE_KEY = "sb_secret_LiZRfLhZFhhF0wu0zrucGg_0VpReJ8q";
+        const SUPABASE_URL = "https://TU_SUPABASE_URL.supabase.co";
+        const SUPABASE_KEY = "TU_SUPABASE_ANON_KEY";
         
         let _supabase = null;
         let usandoBaseDatosReal = false;
 
-        // Estado local para rastrear cuáles turnos están ocupados
         const estadoTurnos = {
             "turno-9am": true,
             "turno-11am": true,
@@ -153,7 +154,7 @@
                 _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 usandoBaseDatosReal = true;
             } catch (e) {
-                console.warn("Fallo al iniciar Supabase.");
+                console.warn("Fallo crítico al iniciar la conexión con Supabase.");
             }
         }
 
@@ -166,11 +167,17 @@
         }
 
         async function cargarTurnosIniciales() {
-            let { data: turnos, error } = await _supabase.from('turnos_salon').select('*');
-            if (!error && turnos) {
-                turnos.forEach(turno => {
-                    actualizarInterfazTurno(turno.id, turno.disponible, turno.usuario_reserva);
-                });
+            try {
+                let { data: turnos, error } = await _supabase.from('turnos_salon').select('*');
+                if (!error && turnos) {
+                    turnos.forEach(turno => {
+                        actualizarInterfazTurno(turno.id, turno.disponible, turno.usuario_reserva);
+                    });
+                } else {
+                    console.error("Error cargando los turnos desde el servidor:", error);
+                }
+            } catch (e) {
+                console.error("Error de conexión inicial:", e);
             }
         }
 
@@ -184,26 +191,30 @@
                 .subscribe();
         }
 
+        // FUNCIÓN BLINDADA CONTRA ERRORES DE DATOS VÁCIOS o NULL
         function actualizarInterfazTurno(id, disponible, usuario) {
             const boton = document.getElementById(id);
             const infoUser = document.getElementById('info-user-' + id);
 
-            // Guardamos el estado actual del turno en nuestro rastreador
             if (id in estadoTurnos) {
                 estadoTurnos[id] = disponible;
             }
 
             if (!disponible) {
+                // 1. Bloqueo inmediato del botón en la interfaz
                 if (boton) {
                     boton.innerText = "No Disponible";
                     boton.classList.add("ocupado");
                     boton.removeAttribute("onclick");
                 }
-                if (infoUser && usuario) {
-                    infoUser.innerText = `Reservado por: ${usuario}`;
+                // 2. Control riguroso del recuadro rosa. No importa si 'usuario' viene nulo, se muestra igual.
+                if (infoUser) {
+                    const nombreMostrar = (usuario && usuario.trim() !== "") ? usuario : "Cliente Registrado";
+                    infoUser.innerText = `Reservado por: ${nombreMostrar}`;
                     infoUser.style.display = "block";
                 }
             } else {
+                // Liberación limpia si es un nuevo día o limpieza
                 if (boton) {
                     boton.innerText = "Reservar Turno";
                     boton.classList.remove("ocupado");
@@ -215,20 +226,18 @@
                 }
             }
 
-            // Comprobar globalmente si ya se cerraron todos los espacios
             verificarSiTodoEstaAgotado();
         }
 
-        // Revisa si quedan turnos libres. Si todos son falsos (ocupados), muestra el cartel abajo
         function verificarSiTodoEstaAgotado() {
             const aviso = document.getElementById("aviso-turnos-agotados");
             const quedanLibres = Object.values(estadoTurnos).includes(true);
 
             if (aviso) {
                 if (!quedanLibres) {
-                    aviso.style.display = "block"; // Se muestra si están todos dados
+                    aviso.style.display = "block";
                 } else {
-                    aviso.style.display = "none";  // Se oculta si hay al menos uno libre
+                    aviso.style.display = "none";
                 }
             }
         }
@@ -251,6 +260,7 @@
             nombreUsuario = nombreUsuario.trim();
 
             try {
+                // Transacción segura: solo permite escribir si el campo en la BD sigue en true
                 const { data, error } = await _supabase
                     .from('turnos_salon')
                     .update({ disponible: false, usuario_reserva: nombreUsuario })
@@ -260,12 +270,14 @@
 
                 if (error || !data || data.length === 0) {
                     alert("¡Lo sentimos! Este turno acaba de ser reservado por otro cliente.");
+                    // Forzamos recarga del estado para pintar el nombre correcto de quien ganó el turno
+                    cargarTurnosIniciales();
                 } else {
                     const linkConNombre = linkOriginal + `%20por%20parte%20de%20${encodeURIComponent(nombreUsuario)}`;
                     window.open(linkConNombre, '_blank');
                 }
             } catch (e) {
-                alert("Error de red. Inténtalo de nuevo.");
+                alert("Error crítico de red. Tu reserva no pudo procesarse. Inténtalo de nuevo.");
             }
         }
 
@@ -280,7 +292,9 @@
                         .update({ disponible: true, usuario_reserva: null, fecha_actualizacion: hoy })
                         .neq('id', 'vacio');
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.warn("No se pudo comprobar el reinicio diario.");
+            }
         }
     </script>
 
